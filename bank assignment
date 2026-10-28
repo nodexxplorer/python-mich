@@ -1,0 +1,79 @@
+class Account:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self._balance = balance
+
+    def deposit(self, amount):
+        if amount <= 0:
+            print("Deposit must be positive.")
+            return
+        self._balance += amount
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            print("Withdrawal must be positive.")
+        elif amount > self._balance:
+            print("Not enough money.")
+        else:
+            self._balance -= amount
+
+    def get_balance(self):
+        return self._balance
+
+
+class SavingsAccount(Account):
+    def __init__(self, owner, balance=0, interest_rate=0.05):
+        super().__init__(owner, balance)
+        self.interest_rate = interest_rate
+
+    def add_interest(self):
+        self._balance += self._balance * self.interest_rate
+
+
+class CurrentAccount(Account):
+    def __init__(self, owner, balance=0, overdraft_limit=500):
+        super().__init__(owner, balance)
+        self.overdraft_limit = overdraft_limit
+
+    def withdraw(self, amount):             # overrides Account.withdraw
+        if amount <= 0:
+            print("Withdrawal must be positive.")
+        elif amount > self._balance + self.overdraft_limit:
+            print("Not enough money.")
+        else:
+            self._balance -= amount
+
+
+class Bank:
+    def __init__(self):
+        self.accounts = []
+
+    def add_account(self, account):
+        self.accounts.append(account)
+
+    def find_account(self, owner):
+        for account in self.accounts:
+            if account.owner == owner:
+                return account
+        return None
+
+    def total_money(self):
+        return sum(account.get_balance() for account in self.accounts)
+
+    def show_all(self):
+        for account in self.accounts:
+            print(f"{account.owner} ({type(account).__name__}): {account.get_balance()}")
+
+
+bank = Bank()
+bank.add_account(SavingsAccount("Ada", 1000))
+bank.add_account(CurrentAccount("Tunde", 300))
+bank.add_account(Account("Chika", 1500))
+
+bank.find_account("Ada").add_interest()
+bank.find_account("Tunde").withdraw(500)     # allowed: goes to -200
+bank.find_account("Chika").withdraw(5000)    # Not enough money.
+bank.find_account("Chika").deposit(-10)      # Deposit must be positive.
+
+bank.show_all()
+print("Total money in bank:", bank.total_money())
