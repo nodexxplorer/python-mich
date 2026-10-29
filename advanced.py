@@ -112,4 +112,4 @@ shop = Shop()
 shop.subscribe(lambda item: inbox.append(f"Ada: {item} is back"))
 shop.subscribe(lambda item: inbox.append(f"Tunde: {item} is back"))
 shop.restock("Rice")
-assert inbox == ["Ada: Rice is back", "Tunde: Rice is back"]
+assert inbox == ["Ada: Rice is back", "Tunde: Rice is back"] 
